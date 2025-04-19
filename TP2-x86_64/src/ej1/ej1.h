@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <stdbool.h>
 
-#define USE_ASM_IMPL 0
+#define USE_ASM_IMPL 1
 
 /** Lista **/
 typedef struct string_proc_list_t {
@@ -55,6 +55,3 @@ char* str_concat(char* a, char* b);
  *  Imprime la lista list en el archivo file.
 */
 void string_proc_list_print(string_proc_list* list, FILE* file);
-
-
-

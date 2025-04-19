@@ -1,0 +1,22 @@
+Fase 1 :
+La función phase_1 compara la cadena ingresada por el usuario con una cadena almacenada en la dirección 0x4c9a58 (referenciada por rip+0xc7c62). Si las cadenas no son iguales (verificado por strings_not_equal), la bomba explota (explode_bomb). La bomba se desactivó al ingresar exactamente la cadena: "He conocido, aunque tarde, sin haberme arrepentido, que es pecado cometido el decir ciertas verdades"
+
+Fase 2 :
+La función phase_2 procesa dos números enteros (A y B) ingresados como cadena, convirtiéndolos mediante strtol y almacenándolos en los registros rbx (primer número) y rax (segundo número). Luego calcula A + B - 32 y lo guarda en edi, mientras que esi y edx conservan los valores originales de A y B respectivamente. Estos argumentos se pasan a la función misterio, que primero verifica si edi tiene exactamente 11 bits en 1 mediante un bucle que recorre cada bit y los cuenta en edx; si no se cumple, la bomba explota. Después, realiza un XOR entre A y B (almacenados en ebx y ebp), y si el resultado no es negativo (es decir, si el bit más significativo no es 1), también detona la bomba. Para desactivar esta fase, se necesitan valores como A = 2080  (0x7FF, que ya tiene 11 bits en 1) y B = -1, asegurando que A ^ B sea negativo y que A + B - 32 mantenga la condición de los 11 bits activos.
+
+Fase 3 :
+Analizando la función phase_3 con GDB, descubrí que el programa espera un input con el formato "%s %d" (una cadena seguida de un número entero), en la dirección 0x4c7098. Si no se proporcionan exactamente dos valores, se activa explode_bomb.
+
+El cálculo de verificación ocurre en la función 'cuenta', que implementa un algoritmo de búsqueda binaria con una particularidad: durante la búsqueda de la palabra ingresada, va sumando los valores ASCII del primer carácter de cada palabra con la que se compara. Esta suma acumulativa es el valor que luego se compara con el número proporcionado.
+
+Para que la fase se complete exitosamente, deben cumplirse dos condiciones estrictas sobre este valor calculado:
+
+1- Debe estar dentro del rango 401 a 799 (0x191 a 0x31F en hexadecimal)
+
+2- Debe coincidir exactamente con el número proporcionado por el usuario
+
+Input proporcionado: querer 439
+
+
+Fase 4:
+La fase requiere dos números de entrada ("X Y") que siguen un patrón específico basado en una lista numérica almacenada en la dirección 0x4cde20. El programa inicia en el primer número (X) y realiza un recorrido donde cada valor actúa como índice para saltar al siguiente elemento de la lista, contando los pasos y acumulando la suma de los valores visitados hasta alcanzar el número 15 como condición de parada. Para desactivar correctamente esta fase, el recorrido debe cumplir dos condiciones críticas: primero, debe terminar exactamente en el número 15 después de exactamente 13 pasos (0xd), y segundo, el segundo número ingresado (Y) debe coincidir con la suma total acumulada durante este recorrido. Tras analizar la lista y simular los saltos, se determinó que comenzando desde el número 4 se cumplen estos requisitos, ya que el camino toma precisamente 13 pasos para llegar al 15 y la suma de todos los valores visitados en esta trayectoria es 101, por lo que la solución válida es ingresar "4 101". Este diseño garantiza que solo la combinación exacta que satisface este patrón de recorrido pueda desactivar la fase exitosamente.
