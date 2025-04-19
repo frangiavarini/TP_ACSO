@@ -1,32 +1,3 @@
-%define NULL 0
-%define TRUE 1
-%define FALSE 0
-
-section .text
-    global string_proc_list_create_asm
-    global string_proc_node_create_asm
-    global string_proc_list_add_node_asm
-    global string_proc_list_concat_asm
-
-    extern malloc
-    extern free
-    extern strlen
-    extern strcpy
-    extern str_concat
-
-
-string_proc_list_create_asm:
-    mov rdi, 16  ; Tamaño de string_proc_list (2 punteros de 8 bytes cada uno en 64 bits)
-    call malloc
-
-    ; Inicializar los punteros first y last a NULL
-    mov qword [rax], 0  ; Asignar NULL a list->first
-    mov qword [rax + 8], 0  ; Asignar NULL a list->last
-
-    ret
-
-
-por el git:
 
 ej1.asm:
 %define NULL 0

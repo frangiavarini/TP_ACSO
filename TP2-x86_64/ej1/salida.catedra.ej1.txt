@@ -1,7 +1,7 @@
 == Ejercicio 1a ==
 
 Creando lista vacia
-junta-constelaciones-mision-estrellas
+
 ======================== Libera memoria =======================
 
 Creando nodo vacio
@@ -78,4 +78,4 @@ junta-constelaciones-mision-estrellas:pavodenebadharaorionsolprocyonlibracisnepa
 junta-constelaciones-mision-estrellas:geminispisiscefeopolarishubblehubblepolluxcruxcalistotritónmirandaartemispallas
 junta-constelaciones-mision-estrellas:sagitariorigelsiriodenebachenarpisissagitariopavojunoadharasoyuzhygiea
 junta-constelaciones-mision-estrellas:pavopolarisaltaircefeopavocruxpavoioeuropaumbrielgalemede
-======================== Fin del test 1b =======================
+======================== Fin del test 1b ==========
