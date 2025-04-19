@@ -1,7 +1,7 @@
 == Ejercicio 1a ==
 
 Creando lista vacia
-
+junta-constelaciones-mision-estrellas
 ======================== Libera memoria =======================
 
 Creando nodo vacio
