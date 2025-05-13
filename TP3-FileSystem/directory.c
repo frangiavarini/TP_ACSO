@@ -6,33 +6,27 @@
 #include <string.h>
 #include <assert.h>
 
-/**
- * TODO
- */
-int directory_findname(struct unixfilesystem *fs, const char *name, int dirinumber, struct direntv6 *dirEnt) {
-    struct inode dirinode;
 
-    if (inode_iget(fs, dirinumber, &dirinode) < 0) {
-        return -1;
-    }
+int directory_findname(struct unixfilesystem *fs, const char *targetName, int dirInumber, struct direntv6 *result) {
+    if (!fs || !targetName || !result) return -1;
 
-    int filesize = (dirinode.i_size0 << 16) | dirinode.i_size1;
-    int num_blocks = (filesize + DISKIMG_SECTOR_SIZE - 1) / DISKIMG_SECTOR_SIZE;
+    struct inode inodeBuffer;
+    if (inode_iget(fs, dirInumber, &inodeBuffer) != 0) return -1;
 
-    char block[DISKIMG_SECTOR_SIZE];
+    int fileSize = inode_getsize(&inodeBuffer);
+    int totalBlocks = (fileSize + DISKIMG_SECTOR_SIZE - 1) / DISKIMG_SECTOR_SIZE;
+    char data[DISKIMG_SECTOR_SIZE];
 
-    for (int b = 0; b < num_blocks; b++) {
-        int nbytes = file_getblock(fs, dirinumber, b, block);
-        if (nbytes < 0) {
-            return -1;
-        }
+    for (int blk = 0; blk < totalBlocks; blk++) {
+        int bytesRead = file_getblock(fs, dirInumber, blk, data);
+        if (bytesRead < 0) return -1;
 
-        int num_entries = nbytes / sizeof(struct direntv6);
-        struct direntv6 *entries = (struct direntv6 *)block;
+        struct direntv6 *dirEntry = (struct direntv6 *) data;
+        int entryCount = bytesRead / sizeof(struct direntv6);
 
-        for (int i = 0; i < num_entries; i++) {
-            if (strncmp(entries[i].d_name, name, FILENAME_MAX) == 0) {
-                *dirEnt = entries[i];
+        for (int e = 0; e < entryCount; e++) {
+            if (strncmp(dirEntry[e].d_name, targetName, FILENAME_MAX) == 0) {
+                memcpy(result, &dirEntry[e], sizeof(struct direntv6));
                 return 0;
             }
         }
@@ -40,4 +34,5 @@ int directory_findname(struct unixfilesystem *fs, const char *name, int dirinumb
 
     return -1;
 }
+
 

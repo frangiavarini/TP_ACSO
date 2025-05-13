@@ -6,33 +6,34 @@
 #include <string.h>
 #include <assert.h>
 
-/**
- * TODO
- */
-int pathname_lookup(struct unixfilesystem *fs, const char *pathname) {
-    if (pathname[0] != '/') {
-        // Solo se permiten paths absolutos
+
+int pathname_lookup(struct unixfilesystem *fs, const char *path) {
+    if (!fs || !path || path[0] != '/') {
+        
         return -1;
     }
 
-    int curr_inumber = 1;  // El inodo raíz siempre es 1
-    char path_copy[strlen(pathname) + 1];
-    strcpy(path_copy, pathname);
+    int inumber = 1; 
 
-    // Tokenizamos usando "/"
-    char *token = strtok(path_copy, "/");
+    l
+    size_t len = strlen(path);
+    char tempPath[len + 1];
+    strncpy(tempPath, path, len + 1);
 
-    while (token != NULL) {
-        struct direntv6 entry;
+    char *segment = strtok(tempPath, "/");
+    struct direntv6 dirEntry;
 
-        if (directory_findname(fs, token, curr_inumber, &entry) < 0) {
-            return -1;  // No se encontró el componente del path
+    while (segment != NULL) {
+        if (directory_findname(fs, segment, inumber, &dirEntry) != 0) {
+           
+            return -1;
         }
 
-        curr_inumber = entry.d_inumber;
-        token = strtok(NULL, "/");
+        inumber = dirEntry.d_inumber;
+        segment = strtok(NULL, "/");
     }
 
-    return curr_inumber;
+    return inumber;
 }
+
 
