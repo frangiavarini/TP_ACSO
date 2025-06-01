@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "direntv6.h": "c",
-        "inode.h": "c"
+        "inode.h": "c",
+        "unistd.h": "c"
     }
 }
