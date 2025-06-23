@@ -14,21 +14,15 @@
 
 using namespace std;
 
-// typedef struct worker {
-//     thread ts;
-//     function<void(void)> thunk;
-//     Semaphore sem = Semaphore(0);  // espera señal del dispatcher
-//     bool available = true;         // estado del worker
-// } worker_t;
 
 
 typedef struct worker {
     thread ts;
     function<void(void)> thunk;
-    Semaphore sem;       // sin inicializar acá
+    Semaphore sem;      
     bool available = true;
 
-    worker() : sem(0) {} // inicialización segura del semáforo en constructor
+    worker() : sem(0) {} 
 } worker_t;
 
 class ThreadPool {
@@ -39,8 +33,8 @@ class ThreadPool {
     ~ThreadPool();
 
   private:
-    void dispatcher();     // <-- AGREGAR ESTA LÍNEA
-    void worker(int id);   // <-- Y ESTA TAMBIÉN
+    void dispatcher();     
+    void worker(int id);  
 
     thread dt;
     vector<worker_t> wts;

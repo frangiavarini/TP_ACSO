@@ -8,25 +8,18 @@ ThreadPool::ThreadPool(size_t numThreads)
 
     for (size_t i = 0; i < numThreads; ++i) {
         wts[i].ts = thread([this, i] { worker(i); });
-        availableWorkers.signal(); // hace a cada worker visible al dispatcher
+        availableWorkers.signal(); 
     }
 
     dt = thread([this] { dispatcher(); });
 }
 
 
-// void ThreadPool::schedule(const function<void(void)>& thunk) {
-//     {
-//         lock_guard<mutex> lock(queueLock);
-//         taskQueue.push(thunk);
-//     }
-//     dispatcherCV.notify_one();
-// }
 
 void ThreadPool::schedule(const function<void(void)>& thunk) {
     {
         lock_guard<mutex> lock(queueLock);
-        if (done) return;  // ya se está destruyendo
+        if (done) return;  
         taskQueue.push(thunk);
     }
     dispatcherCV.notify_one();
@@ -47,7 +40,7 @@ void ThreadPool::dispatcher() {
             taskQueue.pop();
         }
 
-        availableWorkers.wait(); // espera a que haya un worker libre
+        availableWorkers.wait(); 
 
         for (size_t i = 0; i < wts.size(); ++i) {
             if (wts[i].available) {
@@ -57,7 +50,7 @@ void ThreadPool::dispatcher() {
                     lock_guard<mutex> guard(waitLock);
                     runningTasks++;
                 }
-                wts[i].sem.signal(); // le pasa el trabajo
+                wts[i].sem.signal(); 
                 break;
             }
         }
@@ -83,7 +76,7 @@ void ThreadPool::worker(int id) {
             }
         }
 
-        availableWorkers.signal(); // avisa al dispatcher que hay un worker libre
+        availableWorkers.signal();
     }
 }
 
@@ -101,7 +94,7 @@ ThreadPool::~ThreadPool() {
     dispatcherCV.notify_all();
 
     for (size_t i = 0; i < wts.size(); ++i) {
-        wts[i].sem.signal();  // desbloquea a cada worker
+        wts[i].sem.signal();  
     }
 
     if (dt.joinable()) dt.join();
